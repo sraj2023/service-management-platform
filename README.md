@@ -1,4 +1,4 @@
-# service-management-plaform
+# service-management-platform
 
 ## Building a Dynamic Tradie Platform
 Service Management softwares provides a unified platform to connect homeowners and businesses with trusted tradies and for tradies to manage their daily jobs and overcome any obstacle the day may bring. Service management software platforms have unveiled a new suite of powerful capabilities for trades business to optimize ROI and efficiency.These platforms deliver a seamlessly integrated experience that enable thousands of business owners to accelerate growth, drive operational efficiencies and deliver a superior customer experience. Customers can post trade jobs of any size, whether homeowners or commercial businesses, and tradies can pick these jobs based on their area of expertise, design productive workflows for these jobs, ensuring better profit margins. They can also empower their team at every part of the job cycle and use gathered data to make quick decisions, coach their team and impress customers by providing high quality deliverables. 
