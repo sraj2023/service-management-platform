@@ -182,7 +182,7 @@ SELECT * FROM 'job_status' EMIT CHANGES;
     - Fetch latest location data from truck tracking table:
     SELECT * from TRUCK_TRACKER;
 
-### Sink Messages from Confluent Cloud
+### Sink Messages from Confluent Cloud to MongoDB
 
 With Confluent Cloud, you have the option of writing your own consumers using clients. However, for this demonstration, we will be integration with an external system using a Sink Connector in Confluent CLoud.
 
