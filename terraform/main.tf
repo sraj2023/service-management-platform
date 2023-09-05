@@ -89,7 +89,20 @@ resource "confluent_kafka_topic" "order_placed" {
     secret = confluent_api_key.terraform_Created_APIKEY.secret
   }
 }
-  
+
+resource "confluent_kafka_topic" "job_status" {
+  kafka_cluster {
+    id = confluent_kafka_cluster.basic.id
+  }
+  topic_name    = "job_status"
+  rest_endpoint      = confluent_kafka_cluster.basic.rest_endpoint
+  credentials {
+    key   = confluent_api_key.terraform_Created_APIKEY.id
+    secret = confluent_api_key.terraform_Created_APIKEY.secret
+  }
+}
+
+#Creates a ksqlDB cluster
 resource "confluent_ksql_cluster" "example" {
   display_name = "example"
   csu          = 4
@@ -109,4 +122,41 @@ resource "confluent_ksql_cluster" "example" {
     prevent_destroy = true
   }
 }
+
+
+#creates a MongoDb Sink Connector
+resource "confluent_connector" "mongo-db-sink" {
+  environment {
+      id = confluent_environment.development.id
+  }
+  kafka_cluster {
+    id = confluent_kafka_cluster.basic.id
+  }
+
+  
+  config_sensitive = {
+    "connection.password" = var.mongo_password,
+  }
+
+  
+  config_nonsensitive = {
+    "connector.class"          = "MongoDbAtlasSink"
+    "name"                     = "confluent-mongodb-sink"
+    "kafka.auth.mode"          = "SERVICE_ACCOUNT"
+    "kafka.service.account.id" = confluent_service_account.terraform_new_user.id
+    "connection.host"          = var.mongo_host
+    "connection.user"          = var.mongo_username
+    "input.data.format"        = "JSON"
+    "topics"                   = confluent_kafka_topic.job_status.topic_name
+    "max.num.retries"          = "3"
+    "retries.defer.timeout"    = "5000"
+    "max.batch.size"           = "0"
+    "database"                 = "all_jobs"
+    "collection"               = "orders"
+    "tasks.max"                = "1"
+  }
+}
+
+
+
 
