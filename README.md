@@ -53,7 +53,7 @@ Using Confluent Cloud, created a streaming application gets really easy. Today, 
 > Note: The Cluster API key differs from the Confluent Cloud API Key. The Confluent Cloud Cluster key and secret were created by the terraform script. For getting the secret, navigate to terraform/terraform.tfstate file, which gets created automatically after We initialialize Terraform, and search "secret"
      
 - Execute the Python script using the following syntax:
->`python3 file_name.py`
+```python3 file_name.py```
 
 - Confluent has support for several high performing clients in many popular languages. Explore the Clients section inside your cluster.
 
