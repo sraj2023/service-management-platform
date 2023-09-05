@@ -9,14 +9,14 @@ This demo outlines some of the use cases of a popular tool used in construction 
 
 ![Architecture Diagram](resources/Architecture-diagram.jpeg)
 
-For this demo, we will utilize a Python client and write our producer in order to transmit records for the orders being placed and the jobs being created. Further, we will understand how ksqlDB can be used to perform transformations on the events. At the end, we will see how the data is consumed by a Sink Connector.
+For this demo, we will utilize a Python client and write our producer in order to transmit records for the orders being placed and the jobs being created. The reference architecture above shows an example of how a real-time service marketplace can be architected where the data can be pulled from sources such as PostgreSQL and other systems in accounting, finance etc , enriched in Confluent Cloud using ksqlDB and sent to downstream systems such as MongoDB.
 
 ## Pre-requisites
 
 Before we go ahead and start with the technical aspects, please make sure you have these pre-requisites in place. These are very essential to complete our demo successfully
  - Sign up for a Confluent Cloud account from [here](https://www.confluent.io/confluent-cloud/tryfree/)
  - Install Terraform, an infrastructure as code tool, from [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
- - Install python. 
+ - Install python3 
  - Install python modules using this command: pip3 install modulename
  - Create a Mongo DB Atlas Account here: [here](https://www.mongodb.com/cloud/atlas/register)
 
@@ -53,8 +53,7 @@ Using Confluent Cloud, created a streaming application gets really easy. Today, 
 > Note: The Cluster API key differs from the Confluent Cloud API Key. The Confluent Cloud Cluster key and secret were created by the terraform script. For getting the secret, navigate to terraform/terraform.tfstate file, which gets created automatically after We initialialize Terraform, and search "secret"
      
 - Execute the Python script using the following syntax:
-`python3 file_name.py`
-> Note: The command will depend on the python version installed
+>`python3 file_name.py`
 
 - Confluent has support for several high performing clients in many popular languages. Explore the Clients section inside your cluster.
 
@@ -62,7 +61,7 @@ Using Confluent Cloud, created a streaming application gets really easy. Today, 
 
 Now that your data is in motion, it’s time to make sense of it. Stream processing enables you to derive instant insights from your data streams, but setting up the infrastructure to support it can be complex. That’s why Confluent developed ksqlDB, the database purpose-built for stream processing applications. With ksqlDB, you can continuously transform, enrich, join, and aggregate your data using simple SQL-like syntax. 
 
-In this demonstration, we will learn how topics are transformed to [Streams](https://www.confluent.io/blog/kafka-streams-tables-part-3-event-processing-fundamentals/), and data from two streams can be joined and filtered. We will start by creating two Streams for the two Topics we had created earlier using Terraform. The goal is to determine whether tje order was accepted or rejected. The 'orders_placed' Stream will have the 'price_quoted' data, while the 'jobs_created' Stream will have the 'price' values. We will first perform a join on the 'job_id' values, and then compare the price quoted to the price mentioned. If the quoted price is higher than or equal to the price mentioned in the job, the status for the job will change from 'Yet To Begin' to 'Accepted', else it will be 'Rejected'.
+In this demonstration, we will learn how topics are transformed to [Streams](https://www.confluent.io/blog/kafka-streams-tables-part-3-event-processing-fundamentals/), and data from two streams can be joined and filtered. We will start by creating two Streams for the two Topics we had created earlier using Terraform. The goal is to determine whether the order was accepted or rejected. The 'orders_placed' Stream will have the 'price_quoted' data, while the 'jobs_created' Stream will have the 'price' values. We will first perform a join on the 'job_id' values, and then compare the price quoted to the price mentioned. If the quoted price is higher than or equal to the price mentioned in the job, the status for the job will change from 'Yet To Begin' to 'Accepted', else it will be 'Rejected'.
 
 #### Steps to follow-
 - Navigate to the ksqlDB cluster created in Confluent Cloud UI. Further, open the editor tab to start wrtiting the ksqlDB queries.
@@ -189,7 +188,9 @@ SELECT * FROM 'job_status' EMIT CHANGES;
 ### Sink Messages from Confluent Cloud to MongoDB
 
 With Confluent Cloud, you have the option of writing your own consumers using clients. However, for this demonstration, we will be integration with an external system using a Sink Connector in Confluent CLoud.
-
+For this demonstration, we have already provisioned a MongoDB Sink Connector using Terraform. However you have the option to create the same using Confluent Cloud UI as well.
+<details>
+<summary>Create Connector using Confluent Cloud UI</summary>
 - In Confluent Cloud, navigate to the Connectors section. Confluent has a library of over 200 [Connectors](https://docs.confluent.io/cloud/current/connectors/index.html), more than half of which are Confluent developed and supported. In this demo, we will be utilizing the MongoDB Atlas Sink Connector.
 
 - In the next step, choose the 'job_status' topic we created to fetch if the request has been accepted or rejected.
@@ -201,7 +202,7 @@ With Confluent Cloud, you have the option of writing your own consumers using cl
 - Choose the Input Kafka record value format as JSON here.
 
 - Configure the number of tasks, review the configuration and launch.
-
+</details>
 > For this demo, please ensure that the  MongoDB Cluster is public by adding 0.0.0.0/0 in Network Access Section.
 
 - Once the connector is up and running, the messages will get consumed and start displaying in the mentioned database.
