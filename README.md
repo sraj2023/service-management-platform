@@ -183,15 +183,18 @@ SELECT * FROM 'job_status' EMIT CHANGES;
     EMIT CHANGES;
     ```
     - Fetch latest location data from truck tracking table:
+    ```
     SELECT * from TRUCK_TRACKER;
-
+    ```
+    ![Truck Location](resources/truck_location.png)
+    
 ### Sink Messages from Confluent Cloud to MongoDB
 
-With Confluent Cloud, you have the option of writing your own consumers using clients. However, for this demonstration, we will be integration with an external system using a Sink Connector in Confluent CLoud.
+With Confluent Cloud, you have the option of writing your own consumers using clients. Instead, we will be integration with an external system using a Sink [Connector](https://docs.confluent.io/cloud/current/connectors/index.html) in Confluent Cloud.
 For this demonstration, we have already provisioned a MongoDB Sink Connector using Terraform. However you have the option to create the same using Confluent Cloud UI as well.
 <details>
 <summary>Create Connector using Confluent Cloud UI</summary>
-- In Confluent Cloud, navigate to the Connectors section. Confluent has a library of over 200 [Connectors](https://docs.confluent.io/cloud/current/connectors/index.html), more than half of which are Confluent developed and supported. In this demo, we will be utilizing the MongoDB Atlas Sink Connector.
+- In Confluent Cloud, navigate to the Connectors section. Confluent has a library of over 200 Connectors, more than half of which are Confluent developed and supported. In this demo, we will be utilizing the MongoDB Atlas Sink Connector.
 
 - In the next step, choose the 'job_status' topic we created to fetch if the request has been accepted or rejected.
 
