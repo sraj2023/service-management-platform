@@ -1,7 +1,7 @@
 # service-management-platform
 
-## Building a Dynamic Tradie Platform
-Service Management softwares provides a unified platform to connect homeowners and businesses with trusted tradies and for tradies to manage their daily jobs and overcome any obstacle the day may bring. Service management software platforms have unveiled a new suite of powerful capabilities for trades business to optimize ROI and efficiency.These platforms deliver a seamlessly integrated experience that enable thousands of business owners to accelerate growth, drive operational efficiencies and deliver a superior customer experience. Customers can post trade jobs of any size, whether homeowners or commercial businesses, and tradies can pick these jobs based on their area of expertise, design productive workflows for these jobs, ensuring better profit margins. They can also empower their team at every part of the job cycle and use gathered data to make quick decisions, coach their team and impress customers by providing high quality deliverables. 
+## Build a Real-Time Service Marketplace
+Service Marketplaces and Platforms provide a unified platform to connect homeowners and businesses with trusted tradespersons and for tradespersons to manage their daily jobs and overcome any obstacle the day may bring. Service Marketplaces and Platforms have unveiled a new suite of powerful capabilities for trades business to optimize ROI and efficiency.These platforms deliver a seamlessly integrated experience that enable thousands of business owners to accelerate growth, drive operational efficiencies and deliver a superior customer experience. Customers can post trade jobs of any size, whether homeowners or commercial businesses, and tradespersons can pick these jobs based on their area of expertise, design productive workflows for these jobs, ensuring better profit margins. They can also empower their team at every part of the job cycle and use gathered data to make quick decisions, coach their team and impress customers by providing high quality deliverables. 
 
 This demo outlines some of the use cases of a popular tool used in construction business detailing how Confluent Cloud, a managed Kafka solution is used as a centralized streaming platform for their event driven processing that supports the platform.
 
@@ -18,9 +18,12 @@ Before we go ahead and start with the technical aspects, please make sure you ha
  - Install Terraform, an infrastructure as code tool, from [here](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli)
  - Install python. 
  - Install python modules using this command: pip3 install modulename
+ - Create a Mongo DB Atlas Account here: [here](https://www.mongodb.com/cloud/atlas/register)
 
 
 ## Steps to follow
+
+Using Confluent Cloud, created a streaming application gets really easy. Today, we will start by creating API Keys for Confluent Cloud to help with authentication and then execute a Terraform Script that is used for automation of provisioning of resources. The Terraform code will ensure our Environment, Cluster, Connectors, Topics, Service Accounts and ksqlDB Cluster is up and running without all the manual tasks. Once everything is provisioned successfully, we will produce some dummy data. With the help of the Terraform Script we have already created two topics; order_placed and job_created. The 'order_placed' topic denotes the customer_id, the choice of service, the location, the contractor assigned, the price quoted by the customer and a unique job-id is created. The 'job_created' topic consists of the unique job-id, the available dates, the minimum price charged for a service and the status of a job, whcih at the beginning is 'Yet To Begin' for all jobs. Once the data is produced successfully, we will leverage ksqlDB for enrichment, details for which are mentioned in the 'Stream Processing with ksqlDB' Section. Further, the jobs created are then sent to be consumed by the MongoDB Atlas Sink connector.
 
 ### Generate a Confluent Cloud API Key and Secret (Please do not get confused with Confluent Cloud Cluster API Key and Secret)
     
@@ -37,6 +40,7 @@ Before we go ahead and start with the technical aspects, please make sure you ha
     `terraform init`
 - Now, apply to create the infrastructure with this command:
     `terraform apply`
+  
 ### Produce data using Python Clients
 - For producing data to the Kafka cluster, navigate to the python folder. There are two producers we will be executing, that will produce data to two topics simultaneously. Before executing these files, update the following values in both the producer clients.
     
@@ -58,7 +62,7 @@ Before we go ahead and start with the technical aspects, please make sure you ha
 
 Now that your data is in motion, it’s time to make sense of it. Stream processing enables you to derive instant insights from your data streams, but setting up the infrastructure to support it can be complex. That’s why Confluent developed ksqlDB, the database purpose-built for stream processing applications. With ksqlDB, you can continuously transform, enrich, join, and aggregate your data using simple SQL-like syntax. 
 
-In this demonstration, we will learn how topics are transformed to [Streams](https://www.confluent.io/blog/kafka-streams-tables-part-3-event-processing-fundamentals/), and data from two streams can be joined and filtered.
+In this demonstration, we will learn how topics are transformed to [Streams](https://www.confluent.io/blog/kafka-streams-tables-part-3-event-processing-fundamentals/), and data from two streams can be joined and filtered. We will start by creating two Streams for the two Topics we had created earlier using Terraform. The goal is to determine whether tje order was accepted or rejected. The 'orders_placed' Stream will have the 'price_quoted' data, while the 'jobs_created' Stream will have the 'price' values. We will first perform a join on the 'job_id' values, and then compare the price quoted to the price mentioned. If the quoted price is higher than or equal to the price mentioned in the job, the status for the job will change from 'Yet To Begin' to 'Accepted', else it will be 'Rejected'.
 
 #### Steps to follow-
 - Navigate to the ksqlDB cluster created in Confluent Cloud UI. Further, open the editor tab to start wrtiting the ksqlDB queries.
@@ -123,7 +127,7 @@ SELECT * FROM 'job_status' EMIT CHANGES;
 ```
 ![Result Stream](resources/job_status.jpeg)
 
-- With ksqlDB, we can also provide real-time visibility into a customer's tradie location status to help ensure jobs are fulfilled in a timely manner. However, aggregating data from multiple different data sources and continuously processing it in real time as locations change can be rather daunting. Let us see a simple way to do that!
+- With ksqlDB, we can also provide real-time visibility into a customer's tradesperson's location status to help ensure jobs are fulfilled in a timely manner. However, aggregating data from multiple different data sources and continuously processing it in real time as locations change can be rather daunting. Let us see a simple way to do that!
     - Create two topics 'tradie_truck' and 'joblocation' with 6 partitions and insert mock data to it. You can modify the existing producer code we have, and explore more.
 
     - Create a Table and a Stream with the topics you just created:
@@ -182,7 +186,7 @@ SELECT * FROM 'job_status' EMIT CHANGES;
     - Fetch latest location data from truck tracking table:
     SELECT * from TRUCK_TRACKER;
 
-### Sink Messages from Confluent Cloud
+### Sink Messages from Confluent Cloud to MongoDB
 
 With Confluent Cloud, you have the option of writing your own consumers using clients. However, for this demonstration, we will be integration with an external system using a Sink Connector in Confluent CLoud.
 
