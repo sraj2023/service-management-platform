@@ -1,9 +1,11 @@
-# service-management-platform
+<div align="center" padding=25px>
+    <img src="/resources/confluent.png" width=50% height=50%>
+</div>
 
-## Build a Real-Time Service Marketplace
-Service Marketplaces and Platforms provide a unified platform to connect homeowners and businesses with trusted tradespersons and for tradespersons to manage their daily jobs and overcome any obstacle the day may bring. Service Marketplaces and Platforms have unveiled a new suite of powerful capabilities for trades business to optimize ROI and efficiency.These platforms deliver a seamlessly integrated experience that enable thousands of business owners to accelerate growth, drive operational efficiencies and deliver a superior customer experience. Customers can post trade jobs of any size, whether homeowners or commercial businesses, and tradespersons can pick these jobs based on their area of expertise, design productive workflows for these jobs, ensuring better profit margins. They can also empower their team at every part of the job cycle and use gathered data to make quick decisions, coach their team and impress customers by providing high quality deliverables. 
+# <div align="center">Build a Real-Time Service Marketplace</div>
+Service Marketplaces and Platforms provide a unified platform to connect homeowners and businesses with trusted tradespersons and for tradespersons to manage their daily jobs and overcome any obstacle the day may bring. Service Marketplaces and Platforms have unveiled a new suite of powerful capabilities for trades business to optimize ROI and efficiency. These platforms deliver a seamlessly integrated experience that enables thousands of business owners to accelerate growth, drive operational efficiencies and deliver a superior customer experience. Customers can post trade jobs of any size, whether for homeowners or commercial businesses, and tradespersons can pick these jobs based on their area of expertise and design productive workflows for these jobs, ensuring better profit margins. They can also empower their team at every part of the job cycle and use gathered data to make quick decisions, coach their team and impress customers by providing high-quality deliverables. 
 
-This demo outlines some of the use cases of a popular tool used in construction business detailing how Confluent Cloud, a managed Kafka solution is used as a centralized streaming platform for their event driven processing that supports the platform.
+This demo outlines some of the use cases of a popular tool used in a construction business by detailing how Confluent Cloud, a managed Kafka solution, is used as a centralized streaming platform for their event-driven processing that supports the service platform.
 
 ## Architecture Diagram
 
@@ -57,13 +59,13 @@ Using Confluent Cloud, created a streaming application gets really easy. Today, 
 
 - Confluent has support for several high performing clients in many popular languages. Explore the Clients section inside your cluster.
 
-### Stream Processing with ksqlDB
+## Stream Processing with ksqlDB
 
 Now that your data is in motion, it’s time to make sense of it. Stream processing enables you to derive instant insights from your data streams, but setting up the infrastructure to support it can be complex. That’s why Confluent developed ksqlDB, the database purpose-built for stream processing applications. With ksqlDB, you can continuously transform, enrich, join, and aggregate your data using simple SQL-like syntax. 
 
 In this demonstration, we will learn how topics are transformed to [Streams](https://www.confluent.io/blog/kafka-streams-tables-part-3-event-processing-fundamentals/), and data from two streams can be joined and filtered. We will start by creating two Streams for the two Topics we had created earlier using Terraform. The goal is to determine whether the order was accepted or rejected. The 'orders_placed' Stream will have the 'price_quoted' data, while the 'jobs_created' Stream will have the 'price' values. We will first perform a join on the 'job_id' values, and then compare the price quoted to the price mentioned. If the quoted price is higher than or equal to the price mentioned in the job, the status for the job will change from 'Yet To Begin' to 'Accepted', else it will be 'Rejected'.
 
-#### Steps to follow-
+### Steps to follow-
 - Navigate to the ksqlDB cluster created in Confluent Cloud UI. Further, open the editor tab to start wrtiting the ksqlDB queries.
 
 - At the bottom of the editor, set `auto.offset.reset` to `earliest`. This value determines the position (or offset) to start reading the data from.
@@ -188,7 +190,7 @@ SELECT * FROM 'job_status' EMIT CHANGES;
     ```
     ![Truck Location](resources/truck_location.png)
     
-### Sink Messages from Confluent Cloud to MongoDB
+## Sink Messages from Confluent Cloud to MongoDB
 
 With Confluent Cloud, you have the option of writing your own consumers using clients. Instead, we will be integration with an external system using a Sink [Connector](https://docs.confluent.io/cloud/current/connectors/index.html) in Confluent Cloud.
 For this demonstration, we have already provisioned a MongoDB Sink Connector using Terraform. However you have the option to create the same using Confluent Cloud UI as well.
@@ -212,27 +214,39 @@ For this demonstration, we have already provisioned a MongoDB Sink Connector usi
 
 ![MongoDB Sink](resources/MongoDB-Sink.jpeg)
 
-### Visualize Real-Time Data Streams with Stream Lineage
 
-Stream Lineage helps us in observing the movement of your data streams in real time- where did the data come from, where is it going, and what processing is happening in the motion. It helps in 
-understanding complex data relationships and uncover more insights all with a visual representation of your data flow. You can also access real-time performance & health metrics directly alongside every pipeline.
+## Confluent Cloud Stream Governance
 
-![Stream Lineage](resources/Stream-Lineage.jpeg)
+Confluent offers data governance tools such as Stream Quality, Stream Catalog, and Stream Lineage in a package called Stream Governance. These features ensure your data is high quality, observable and discoverable. Learn more about **Stream Governance** [here](https://www.confluent.io/product/stream-governance/) and refer to the [docs](https://docs.confluent.io/cloud/current/stream-governance/overview.html) page for detailed information.
+
+1.  Navigate to https://confluent.cloud
+1.  Use the left hand-side menu and click on **Stream Lineage**.
+    Stream lineage provides a graphical UI of the end-to-end flow of your data. Both from a bird’s eye view and drill-down magnification for answering questions like:
+
+    - Where did data come from?
+    - Where is it going?
+    - Where, when, and how was it transformed?
+
+For this use case, the stream lineage appears as follows: 
+
+<div align="center"> 
+  <img src="resources/Stream-Lineage.jpeg" width =100% heigth=100%>
+</div>
+
+
+Confluent expands Stream Governance capabilities with [**Data Portal**](https://docs.confluent.io/cloud/current/stream-governance/data-portal.html), allowing teams to easily find all the real-time data streams in an organization. 
 
 ### Congratulations! Your Service Management demo is now successfully completed. 
 
-### Teardown
+## Teardown
 
 - It is a good practice to delete any resources that were created to prevent additional charges and save on infrastructure cost. Navigate to the terraform directory and execute the command:
 
 `terraform apply -destroy`
 
-## Self- Enablement
+## References
 
-- All About [Kafka Connect](https://docs.confluent.io/cloud/current/connectors/index.html)
-
-- Introduction to [ksqlDB](https://docs.confluent.io/cloud/current/ksqldb/overview.html)
-
-- [Stream Governance](https://docs.confluent.io/cloud/current/stream-governance/index.html) with Confluent Cloud
-
-- [Deep Dive on Apache Kafka](https://developer.confluent.io/)
+1. All About [Kafka Connect](https://docs.confluent.io/cloud/current/connectors/index.html)
+2. Introduction to [ksqlDB](https://docs.confluent.io/cloud/current/ksqldb/overview.html)
+3. [Stream Governance](https://docs.confluent.io/cloud/current/stream-governance/index.html) with Confluent Cloud
+4. [Deep Dive on Apache Kafka](https://developer.confluent.io/)
